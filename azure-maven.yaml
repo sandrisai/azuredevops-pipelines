@@ -1,7 +1,7 @@
 trigger:
   main
-pool:
-  name: string 
+pool: Default 
+   
 stages:
   - stage: build
     jobs:
