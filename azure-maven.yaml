@@ -1,5 +1,5 @@
 trigger:
-  main
+ - main
 pool: Default 
    
 stages:
@@ -7,34 +7,35 @@ stages:
     jobs:
     - job: buildjob
       steps:
-        - task: SonarCloudPrepare@3
+        - task: SonarCloudPrepare@2
           inputs:
-            SonarCloud: sonarazure
-            organization: sainathreddysandi
-            projectKey: sainathreddysandi_spring-petclinic.git
-            projectName: spring-petclinic.git
+            sonar.host.url: 'https://sonarcloud.io'
+            SonarCloud: 'sonarazure'
+            organization: 'sainathreddysandi'
             scannerMode: 'Other'
             configMode: 'manual'
 
-        - task: Maven@4
-          inputs:
-            mavenPOMFile: 'pom.xml'
-            goals: 'clean verify sonar:sonar'
-            testResultsFiles: '**/surefire-reports/TEST-*.xml'
-            javaHomeOption: 'JDKVersion'
-            jdkArchitectureOption: 'x64'
-            jdkVersionOption: 'default'
-            publishJUnitResults: true
+            extraProperties: |
+              sonar.projectKey=sainathreddysandi_spring-petclinic
+              sonar.projectName=spring-petclinic
             
 
-        - task: SonarQubePublish@3
+        - task: Maven@4
+          inputs:
+            mavenPomFile: 'pom.xml'
+            goals: 'clean verify sonar:sonar'
+            publishJUnitResults: true
+
+            
+        - task: SonarCloudPublish@2
           inputs:
             pollingTimeoutSec: '300'
 
+        
         - task: CopyFiles@2 
           inputs: 
-             Contents: '**'
-             TargetFolder: $(build.artifactstagingdirectory)
+            Contents: '**'
+            TargetFolder: '$(build.artifactstagingdirectory)'
 
         - task: PublishBuildArtifacts@1
           inputs:
